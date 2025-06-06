@@ -47,6 +47,7 @@ export default function HomeScreen() {
   // Llamamos a la API de ThingSpeak cuando la pantalla se carga. Solo se ejecuta una vez cuando la pantalla se monta.
   useEffect(() => {
     setIsLoading(true);  // Activar el loading antes de la actualización
+    loadNotificationSettings(setIsSafeAreaChecked, setIsBatteryChecked);
     
     setTimeout(() => {
       fetchLocation(route, navigation, setLocation, safeLocation, safeRadius, isSafeAreaChecked);  // Actualizar ubicación después de 1 segundo
@@ -59,6 +60,7 @@ export default function HomeScreen() {
 
   const handleReload = () => {
     setIsLoading(true);  // Activar el loading antes de la actualización
+    loadNotificationSettings(setIsSafeAreaChecked, setIsBatteryChecked);
 
     setTimeout(() => {
       fetchLocation(route, navigation, setLocation, safeLocation, safeRadius, isSafeAreaChecked);  // Actualizar ubicación después de 1 segundo

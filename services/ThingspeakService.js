@@ -14,8 +14,7 @@ export const getLocation = async () => {
     const data = response.data.feeds[0];  // Obtener el primer feed
     const latitude = parseFloat(data.field1);  // Suponiendo que el campo 1 contiene la latitud
     const longitude = parseFloat(data.field2);  // Suponiendo que el campo 2 contiene la longitud
-    console.log(latitude)
-    console.log(longitude)
+
     return { latitude, longitude };
   } catch (error) {
     console.error('Error al obtener la ubicación de ThingSpeak:', error);

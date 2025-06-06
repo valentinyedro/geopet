@@ -4,6 +4,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 export default function Header({ onReload }) {
   return (
     <View style={styles.container}>
+      <Image source={require('../assets/logo.png')} style={styles.logo} />
       <Text style={styles.title}>Geopet</Text>
       <TouchableOpacity style={styles.button} onPress={onReload}>
         <Image source={require('../assets/refresh.png')} style={styles.buttonImage} />
@@ -21,6 +22,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: '#fff',
+  },
+  logo: {
+    width: 30,
+    height: 30,
+    marginRight: 10,
   },
   title: {
     fontSize: 24,

@@ -14,6 +14,7 @@ Geopet es una aplicación móvil construida con **React Native** que permite rea
 - **React Native**: Framework para desarrollar aplicaciones móviles nativas utilizando JavaScript y React.
 - **React Navigation**: Librería de navegación para React Native que facilita el manejo de pantallas y rutas.
 - **AsyncStorage**: Almacenamiento local para guardar configuraciones y preferencias, como el área segura y las notificaciones.
+- **Thingspeak API**: Para recibir la ubicación en tiempo real desde el collar GPS de la mascota.
 - **react-native-maps**: Librería para mostrar mapas interactivos en la aplicación, utilizada para mostrar la ubicación de la mascota y el área segura.
 
 ## Instalación
@@ -23,3 +24,4 @@ Geopet es una aplicación móvil construida con **React Native** que permite rea
 ```bash
 git clone https://github.com/tu-usuario/geopet.git
 cd geopet
+npm expo start --tunnel

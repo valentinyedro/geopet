@@ -1,10 +1,10 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet } from 'react-native';
 
-export default function NotificationsButton({ onPress }) {
+export default function RouteToPetButton({ onPress }) {
   return (
     <TouchableOpacity style={styles.button} onPress={onPress}>
-      <Text style={styles.buttonText}>Configurar Notificaciones</Text>
+      <Text style={styles.buttonText}>Ruta hacia Mascota</Text>
     </TouchableOpacity>
   );
 }
@@ -13,8 +13,8 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: '#0A4C69',
     paddingVertical: 12,
-    borderRadius: 8,
     marginBottom: 10,
+    borderRadius: 8,
     alignItems: 'center',
   },
   buttonText: {

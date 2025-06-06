@@ -1,8 +1,8 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, ActivityIndicator } from 'react-native';
 import MapView, { Circle, Marker } from 'react-native-maps';
 
-export default function MapHome({ latitude, longitude, radius, safeLocation }) {
+export default function MapHome({ latitude, longitude, radius, safeLocation, isLoading }) {
   return (
     <View style={styles.container}>
       <MapView
@@ -32,6 +32,15 @@ export default function MapHome({ latitude, longitude, radius, safeLocation }) {
           />
         )}
       </MapView>
+
+      {/* Capa oscurecida sobre el mapa */}
+      {isLoading && (
+        <View style={styles.overlay}>
+          <View style={styles.loadingIndicator}>
+            <ActivityIndicator size="large" color="#fff" />
+          </View>
+        </View>
+      )}
     </View>
   );
 }
@@ -47,5 +56,15 @@ const styles = StyleSheet.create({
   map: {
     width: '100%',
     height: '100%',
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',  // Oscurecer el mapa
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingIndicator: {
+    position: 'absolute',
+    top: '50%',
   },
 });

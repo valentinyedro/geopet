@@ -1,15 +1,35 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, View, Text, TouchableOpacity, StyleSheet, Switch } from 'react-native';
+import { Modal, View, Text, TouchableOpacity, StyleSheet, Switch, Alert } from 'react-native';
+import * as Notifications from 'expo-notifications';
 import { loadNotificationSettings, handleSaveNotifications } from '../services/AuxiliaryService';
 
 export default function NotificationsModal({ visible, onClose }) {
   const [isSafeAreaChecked, setIsSafeAreaChecked] = useState(false);
   const [isBatteryChecked, setIsBatteryChecked] = useState(false);
+  
+  // Estado para controlar si ya se ha solicitado permiso
+  const [permissionGranted, setPermissionGranted] = useState(null);
 
-  // Recuperar el estado de las notificaciones cuando el modal se muestre
+  // Solicitar permisos cuando el modal se abra
   useEffect(() => {
     if (visible) {
-      loadNotificationSettings(setIsSafeAreaChecked, setIsBatteryChecked);  // Cargar la configuración de notificaciones
+      requestPermissions();
+    }
+  }, [visible]);
+
+  const requestPermissions = async () => {
+    try {
+      const { status } = await Notifications.requestPermissionsAsync();
+      setPermissionGranted(status === 'granted');
+      
+    } catch (error) {
+      console.error('Error al solicitar permisos', error);
+    }
+  };
+
+  useEffect(() => {
+    if (visible) {
+      loadNotificationSettings(setIsSafeAreaChecked, setIsBatteryChecked);
     }
   }, [visible]);
 
@@ -18,6 +38,13 @@ export default function NotificationsModal({ visible, onClose }) {
       <View style={styles.overlay}>
         <View style={styles.modalContainer}>
           <Text style={styles.modalTitle}>Configurar Notificaciones</Text>
+
+          {/* Notificación sobre permisos */}
+          {permissionGranted === false && (
+            <Text style={styles.permissionText}>
+              No se han habilitado las notificaciones. Por favor habilítelas en la configuración.
+            </Text>
+          )}
           
           {/* Switches para las notificaciones */}
           <View style={styles.switchContainer}>
@@ -96,5 +123,11 @@ const styles = StyleSheet.create({
   closeButtonText: {
     color: '#fff',
     fontSize: 16,
+  },
+  permissionText: {
+    fontSize: 14,
+    color: 'red',
+    textAlign: 'center',
+    marginBottom: 10,
   },
 });

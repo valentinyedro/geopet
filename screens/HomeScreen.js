@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Alert } from 'react-native';
+import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Header from '../components/Header';
 import MapHome from '../components/MapHome';
 import SafeAreaButton from '../components/SafeAreaButton';
 import NotificationsButton from '../components/NotificationsButton';
 import NotificationsModal from '../components/NotificationsModal';
+import RouteToPetButton from '../components/RouteToPetButton';
 import Toast from 'react-native-toast-message';
-import { loadCoordinates, fetchLocation } from '../services/AuxiliaryService';
+import { loadCoordinates, fetchLocation, openRouteToPet, loadNotificationSettings } from '../services/AuxiliaryService';
 
 export default function HomeScreen() {
   const navigation = useNavigation();
@@ -17,6 +18,11 @@ export default function HomeScreen() {
   const [location, setLocation] = useState({ latitude: -34.759524, longitude: -58.204984 }); // Ubicación predeterminada
   const [safeLocation, setSafeLocation] = useState(null); // Coordenadas de la zona segura
   const [safeRadius, setSafeRadius] = useState(null); // Radio de la zona segura
+  const [isLoading, setIsLoading] = useState(false);  // Estado para control del loading
+  const [isSafeAreaChecked, setIsSafeAreaChecked] = useState(false);
+  const [isBatteryChecked, setIsBatteryChecked] = useState(false);
+
+  // USEEFFECTS
 
   // Cargar las coordenadas y el radio de la zona segura desde AsyncStorage cuando la pantalla se monta
   useEffect(() => {
@@ -40,11 +46,24 @@ export default function HomeScreen() {
 
   // Llamamos a la API de ThingSpeak cuando la pantalla se carga. Solo se ejecuta una vez cuando la pantalla se monta.
   useEffect(() => {
-    fetchLocation(route, navigation, setLocation);
+    setIsLoading(true);  // Activar el loading antes de la actualización
+    
+    setTimeout(() => {
+      fetchLocation(route, navigation, setLocation, safeLocation, safeRadius, isSafeAreaChecked);  // Actualizar ubicación después de 1 segundo
+      setIsLoading(false);  // Desactivar el loading
+    }, 300);
+
   }, []);
 
+  // LÓGICA BOTONES
+
   const handleReload = () => {
-    fetchLocation(route, navigation, setLocation);
+    setIsLoading(true);  // Activar el loading antes de la actualización
+
+    setTimeout(() => {
+      fetchLocation(route, navigation, setLocation, safeLocation, safeRadius, isSafeAreaChecked);  // Actualizar ubicación después de 1 segundo
+      setIsLoading(false);  // Desactivar el loading
+    }, 300);
   };
 
     const openNotificationsModal = () => {
@@ -53,6 +72,7 @@ export default function HomeScreen() {
 
   const closeNotificationsModal = () => {
     setModalVisible(false); // Cierra el modal
+    loadNotificationSettings(setIsSafeAreaChecked, setIsBatteryChecked);
   };
 
   return (
@@ -60,6 +80,12 @@ export default function HomeScreen() {
       <Header onReload={handleReload} />
       
       <View style={styles.mapContainer}>
+        {/* Mostrar mapa con la capa oscurecida si está cargando */}
+        {isLoading ? (
+          <View style={styles.overlay}>
+            <ActivityIndicator size="large" color="#fff" />
+          </View>
+        ) : null}
         <MapHome
           latitude={location.latitude}
           longitude={location.longitude}
@@ -71,12 +97,14 @@ export default function HomeScreen() {
             latitudeDelta: 0.01,
             longitudeDelta: 0.01,
           }}
+          isLoading={isLoading}
         />
       </View>
       
       <View style={styles.buttonsContainer}>
         <SafeAreaButton onPress={() => navigation.navigate('SafeArea', { lat: location.latitude, lon: location.longitude })} />
         <NotificationsButton onPress={openNotificationsModal} />
+        <RouteToPetButton onPress={() => {openRouteToPet(location)}} />
       </View>
 
       <NotificationsModal visible={modalVisible} onClose={closeNotificationsModal} />
@@ -91,9 +119,18 @@ const styles = StyleSheet.create({
     paddingTop: 20
   },
   mapContainer: {
-    height: 330,  // Altura fija para el mapa
+    height: 450,  // Altura fija para el mapa
     borderRadius: 10,
     overflow: 'hidden',
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,  // Cubre todo el mapa
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',  // Fondo oscuro
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginHorizontal: 20,
+    marginTop: 8,
+    borderRadius: 10,
   },
   buttonsContainer: {
     marginHorizontal: 20,
